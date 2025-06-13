@@ -50,6 +50,7 @@ const server = http.createServer((req,res)=>{
 })
 */
 // handle the POST request and reading body data from the request.
+/*
 const server = http.createServer((req,res)=>{
     if(req.method === 'POST'){
         let body = 'me body hu, aayi baat samajh me.';
@@ -61,7 +62,66 @@ const server = http.createServer((req,res)=>{
             res.end(`Received data: ${body}`);
         })
     }
-})
+})*/
+// create a server that serves static files from a directory
+/*
+const server = http.createServer((req,res)=>{
+    if(req.url === '/'){
+        fs.readFile('./index.html', 'utf-8', (err, data) =>{
+            if(err){
+                res.writeHead(500, {'Content-Type': 'text/plain'});
+                res.end("Internal Server Error: Unable to read index.html file.");
+            }
+            else{
+                res.writeHead(200,{'Content-Type': 'text/html'});
+                res.end(data);
+            }
+        })
+    }
+})*/
+//Streaming large data from a file to the response
+/*
+const path = require('path');
+const server = http.createServer((req,res)=>{
+    if(req.url === '/file'){
+        const filepath = path.join(__dirname, 'largefile.txt');
+        //check if the file exists
+        fs.access(filepath, fs.constants.F_OK, (err) => {
+            if(err){
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.end("File not found.");
+                return;
+            }
+            //set headers optional but good for large files.
+            res.writeHead(200, {
+                'Content-Type': 'text/plain',
+                'Transfer-encoding': 'chunked'
+            });
+            // create a read stream and pipe it to the response.
+            const readstream = fs.createReadStream(filepath);
+            readstream.on('error', (err) =>{
+                console.error("Error reading file:", err);
+                res.writeHead(500, {'Content-Type': 'text/plain'});
+                res.end("Internal Server Error: Unable to read file.");
+            })
+        })
+    }
+    else{
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.end("404 Error: Not found.");
+    }
+})*/
+// Keep alive connections.
+// res.setHeader('Connection', 'keep-alive');
+
+/*
 server.listen(3000, () =>{
     console.log('Server is running on port 3000');
-})
+})*/
+
+//Piping request to Another server(Proxying)
+const httpproxy = require('http-proxy');
+const proxy = httpproxy.createProxyServer();
+http.createServer((req,res) =>{
+    proxy.web(req, res, { target: 'http://localhost:4000'});
+}).listen(3000);
