@@ -29,12 +29,13 @@ fs.appendFileSync("./Contacts.txt",`${Date.now()} Hare Krishna`);
 // for deleting the files, we used this property, unlink
 //fs.unlinkSync("./Contact.txt");
 
-
+// for find out the statistics of a file, we used this:
 if (fs.existsSync("./Contacts.txt")) {
     console.log(fs.statSync("./Contacts.txt"));
 } else {
     console.log("File does not exist.");
 }
+
 
 
 
